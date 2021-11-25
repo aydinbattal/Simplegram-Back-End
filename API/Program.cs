@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Models.Entities;
+using API.Models.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +15,7 @@ namespace API
     {
         public static void Main(string[] args)
         {
+            SeedData.Seed(new DataContext());
             CreateHostBuilder(args).Build().Run();
         }
 
