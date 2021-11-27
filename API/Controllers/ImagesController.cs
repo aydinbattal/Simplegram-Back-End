@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Models.DTOs;
 using API.Models.Entities;
 using API.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +22,27 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetImages([FromQuery] int pageNumber, int pageSize)
+        public async Task<IActionResult> GetImages() //[FromQuery] int pageNumber, int pageSize
         {
+            int pageSize = 10;
+            int pageNumber = 1;
 
-
-            var result = _context.Images.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             var totalRecords = await _context.Images.CountAsync();
+            var images = _context.Images.Include(x => x.User).Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var result = new List<ResultDTO>();
 
-            var response = ResponseHelper<Image>.GetPagedResponse("/api/images", result, pageNumber, pageSize, totalRecords);
+            foreach (var i in images)
+            {
+                var resultDto = new ResultDTO
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    Username = i.User.Name
+                };
+                result.Add(resultDto);
+            }
+
+            var response = ResponseHelper<ResultDTO>.GetPagedResponse("/api/images", result, pageNumber, pageSize, totalRecords);
 
             return Ok(response);
         }
