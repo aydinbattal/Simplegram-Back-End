@@ -10,7 +10,7 @@ namespace API.Models.Persistence
     {
         public async static void Seed(DataContext context)
         {
-            // if (context.Books.Count() > 0)
+
             if (context.Images.Any())
                 return;
 
@@ -360,6 +360,29 @@ namespace API.Models.Persistence
             };
 
             await context.Images.AddRangeAsync(images);
+
+
+            // var img = new Image
+            // {
+            //     Url = "https://picsum.photos/id/1023/3955/2094",
+            //     User = new User
+            //     {
+            //         Name = "William Hook",
+            //         Email = "WilliamHook@gmail.com"
+            //     },
+            //     PostingDate = DateTime.Now,
+            //     Tags = new List<Tag>{
+            //             new Tag {
+            //                 Text = "Biking"
+            //             },
+            //             new Tag {
+            //                 Text = "Green"
+            //             }
+            //         }
+
+            // };
+            // await context.Images.AddAsync(img);
+
             await context.SaveChangesAsync();
         }
     }
