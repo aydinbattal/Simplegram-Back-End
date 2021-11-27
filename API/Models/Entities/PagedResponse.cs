@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.Models.Responses
+namespace API.Models.Entities
 {
     public class PagedResponse<T>
     {

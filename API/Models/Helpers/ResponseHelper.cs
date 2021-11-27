@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Models.Entities;
 
-namespace API.Models.Responses
+namespace API.Models.Helpers
 {
     public static class ResponseHelper<T>
     {

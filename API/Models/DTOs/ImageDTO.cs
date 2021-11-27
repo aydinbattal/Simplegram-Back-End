@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace API.Models.DTOs
 {
-    public class ResultDTO
+    public class ImageDTO
     {
         public Guid Id { get; set; }
         public string Url { get; set; }

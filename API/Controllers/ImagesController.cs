@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Models.DTOs;
 using API.Models.Entities;
-using API.Models.Responses;
+using API.Models.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,11 +32,11 @@ namespace API.Controllers
 
             var totalRecords = await _context.Images.CountAsync();
             var images = _context.Images.Include(x => x.User).Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderBy(x => x.PostingDate);
-            var result = new List<ResultDTO>();
+            var result = new List<ImageDTO>();
 
             foreach (var i in images)
             {
-                var resultDto = new ResultDTO
+                var resultDto = new ImageDTO
                 {
                     Id = i.Id,
                     Url = i.Url,
@@ -45,9 +45,41 @@ namespace API.Controllers
                 result.Add(resultDto);
             }
 
-            var response = ResponseHelper<ResultDTO>.GetPagedResponse("/api/images", result, pageNumber, pageSize, totalRecords);
+            var response = ResponseHelper<ImageDTO>.GetPagedResponse("/api/images", result, pageNumber, pageSize, totalRecords);
 
             return Ok(response);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetImage(string id)
+        {
+            try
+            {
+                var image = await _context.Images.Include(x => x.User).Include(x => x.Tags).SingleOrDefaultAsync(x => x.Id.Equals(new Guid(id)));
+
+                if (image == null)
+                    return NotFound();
+                var tags = new List<String>();
+                foreach (var i in image.Tags)
+                {
+                    tags.Add(i.Text);
+                }
+                var imageDetailDto = new ImageDetailDTO
+                {
+                    Id = image.Id,
+                    Url = image.Url,
+                    User_name = image.User.Name,
+                    User_id = image.User.Id,
+                    Tags = tags
+                };
+                return Ok(new Response<ImageDetailDTO>(imageDetailDto));
+            }
+            catch (System.Exception)
+            {
+
+                return BadRequest();
+            }
+
         }
     }
 }
