@@ -87,7 +87,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetImageByTag([FromQuery] string tag, int pageNumber)
         {
 
-            int pageSize = 2;
+            int pageSize = 10;
 
             //if nothing provided in query, return page 1
             if (pageNumber == 0)
@@ -105,7 +105,7 @@ namespace API.Controllers
             {
                 foreach (var t in i.Tags)
                 {
-                    if (t.Text.Equals(tag))
+                    if (t.Text.ToLower().Equals(tag.ToLower()))
                     {
                         var resultDto = new ImageDTO
                         {
