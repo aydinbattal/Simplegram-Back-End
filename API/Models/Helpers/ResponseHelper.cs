@@ -14,10 +14,10 @@ namespace API.Models.Helpers
             int totalPages = (int)Math.Ceiling(totalImages / (double)pageSize);
             response.Meta.Add("totalPages", totalPages.ToString());
             response.Meta.Add("totalImages", totalImages.ToString());
-            response.Links.Add("first", $"{url}?pagenumber=1");
-            response.Links.Add("last", $"{url}?pagenumber={totalPages}");
-            response.Links.Add("next", pageNumber == totalPages ? null : $"{url}?pagenumber={pageNumber + 1}");
-            response.Links.Add("previous", pageNumber == 1 ? null : $"{url}?pagenumber={pageNumber - 1}");
+            response.Links.Add("first", $"{url}pagenumber=1");
+            response.Links.Add("last", $"{url}pagenumber={totalPages}");
+            response.Links.Add("next", pageNumber == totalPages ? null : $"{url}pagenumber={pageNumber + 1}");
+            response.Links.Add("previous", pageNumber == 1 ? null : $"{url}pagenumber={pageNumber - 1}");
             return response;
         }
     }

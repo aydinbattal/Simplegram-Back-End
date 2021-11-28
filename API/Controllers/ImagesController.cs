@@ -31,6 +31,7 @@ namespace API.Controllers
                 pageNumber = 1;
 
             var totalRecords = await _context.Images.CountAsync();
+
             var images = _context.Images.Include(x => x.User).Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderBy(x => x.PostingDate);
             var result = new List<ImageDTO>();
 
@@ -45,13 +46,13 @@ namespace API.Controllers
                 result.Add(resultDto);
             }
 
-            var response = ResponseHelper<ImageDTO>.GetPagedResponse("/api/images", result, pageNumber, pageSize, totalRecords);
+            var response = ResponseHelper<ImageDTO>.GetPagedResponse("/api/images?", result, pageNumber, pageSize, totalRecords);
 
             return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetImage(string id)
+        public async Task<IActionResult> GetImageById(string id)
         {
             try
             {
@@ -79,6 +80,51 @@ namespace API.Controllers
 
                 return BadRequest();
             }
+
+        }
+
+        [HttpGet("byTag")]
+        public async Task<IActionResult> GetImageByTag([FromQuery] string tag, int pageNumber)
+        {
+
+            int pageSize = 2;
+
+            //if nothing provided in query, return page 1
+            if (pageNumber == 0)
+                pageNumber = 1;
+
+
+            var images = _context.Images.Include(x => x.User).Include(x => x.Tags).OrderBy(x => x.PostingDate);
+
+            var result = new List<ImageDTO>();
+
+            if (images == null)
+                return NotFound();
+
+            foreach (var i in images)
+            {
+                foreach (var t in i.Tags)
+                {
+                    if (t.Text.Equals(tag))
+                    {
+                        var resultDto = new ImageDTO
+                        {
+                            Id = i.Id,
+                            Url = i.Url,
+                            Username = i.User.Name
+                        };
+                        result.Add(resultDto);
+                    }
+                }
+
+            }
+            var resultPaginated = result.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var totalRecords = result.Count();
+            var response = ResponseHelper<ImageDTO>.GetPagedResponse($"/api/images/byTag?tag={tag}&&", resultPaginated, pageNumber, pageSize, totalRecords);
+
+            return Ok(response);
+
+
 
         }
     }
