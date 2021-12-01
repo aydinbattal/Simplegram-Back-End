@@ -29,7 +29,14 @@ namespace API.Controllers
             {
                 if (u.Email == newUser.Email)
                 {
-                    return BadRequest();
+                    var errors = new List<Error>{
+                        new Error{
+                            Status = BadRequest().StatusCode,
+                            Title = "Email already exists",
+                            Detail = "This email already exists in the database"
+                        }
+                    };
+                    return BadRequest(errors);
                 }
 
             }

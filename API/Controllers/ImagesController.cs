@@ -59,7 +59,17 @@ namespace API.Controllers
                 var image = await _context.Images.Include(x => x.User).Include(x => x.Tags).SingleOrDefaultAsync(x => x.Id.Equals(new Guid(id)));
 
                 if (image == null)
-                    return NotFound();
+                {
+                    var errors = new List<Error>{
+                        new Error{
+                            Status = NotFound().StatusCode,
+                            Title = "Image not found",
+                            Detail = "No images associated with this id has been found"
+                        }
+                    };
+                    return NotFound(errors);
+                }
+
                 var tags = new List<String>();
                 foreach (var i in image.Tags)
                 {
@@ -78,7 +88,14 @@ namespace API.Controllers
             catch (System.Exception)
             {
 
-                return BadRequest();
+                var errors = new List<Error>{
+                        new Error{
+                            Status = BadRequest().StatusCode,
+                            Title = "Wrong Format",
+                            Detail = "The id format is not correct"
+                        }
+                    };
+                return BadRequest(errors);
             }
 
         }
@@ -98,9 +115,6 @@ namespace API.Controllers
 
             var result = new List<ImageDTO>();
 
-            if (images == null)
-                return NotFound();
-
             foreach (var i in images)
             {
                 foreach (var t in i.Tags)
@@ -115,9 +129,23 @@ namespace API.Controllers
                         };
                         result.Add(resultDto);
                     }
+
                 }
 
             }
+
+            if (result.Count() == 0)
+            {
+                var errors = new List<Error>{
+                        new Error{
+                            Status = NotFound().StatusCode,
+                            Title = "Image not found",
+                            Detail = "No images associated with this tag has been found"
+                        }
+                    };
+                return NotFound(errors);
+            }
+
             var resultPaginated = result.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             var totalRecords = result.Count();
             var response = ResponseHelper<ImageDTO>.GetPagedResponse($"/api/images/byTag?tag={tag}&&", resultPaginated, pageNumber, pageSize, totalRecords);
