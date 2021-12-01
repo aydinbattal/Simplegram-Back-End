@@ -145,5 +145,22 @@ namespace API.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _context.Users.Include(x => x.Images)
+                .SingleOrDefaultAsync(x => x.Id.Equals(new Guid(id)));
+
+            foreach (var i in user.Images)
+            {
+                _context.Images.Remove(i);
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("User is successfully removed");
+        }
     }
 }
