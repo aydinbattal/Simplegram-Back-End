@@ -113,5 +113,37 @@ namespace API.Controllers
 
             return Ok(new Response<AddImageDTO>(response));
         }
+
+        [HttpGet("{id}/images")]
+        public async Task<IActionResult> GetAllUserImages(string id, [FromQuery] int pageNumber)
+        {
+            int pageSize = 10;
+
+            //if nothing provided in query, return page 1
+            if (pageNumber == 0)
+                pageNumber = 1;
+
+            var user = await _context.Users.Include(x => x.Images)
+                .SingleOrDefaultAsync(x => x.Id.Equals(new Guid(id)));
+
+            var totalRecords = user.Images.Count();
+
+            var images = user.Images.Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderByDescending(x => x.PostingDate);
+
+            var result = new List<UserImagesDTO>();
+            foreach (var i in images)
+            {
+                var resultDto = new UserImagesDTO
+                {
+                    Id = i.Id,
+                    Url = i.Url
+                };
+                result.Add(resultDto);
+            }
+
+            var response = ResponseHelper<UserImagesDTO>.GetPagedResponse($"/api/users/{id}/images?", result, pageNumber, pageSize, totalRecords);
+
+            return Ok(response);
+        }
     }
 }
