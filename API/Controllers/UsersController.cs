@@ -85,5 +85,33 @@ namespace API.Controllers
 
             return Ok(new Response<AddImageDTO>(response));
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserImages(string id)
+        {
+            var user = await _context.Users.Include(x => x.Images)
+                .SingleOrDefaultAsync(x => x.Id.Equals(new Guid(id)));
+
+            var lastImages = user.Images.OrderByDescending(x => x.PostingDate).Take(10);
+            if (lastImages.Count() != 10)
+                lastImages = user.Images.OrderByDescending(x => x.PostingDate);
+
+            var urls = new List<string>();
+
+            foreach (var l in lastImages)
+            {
+                urls.Add(l.Url);
+            }
+
+            var response = new AddImageDTO
+            {
+                Id = new Guid(id),
+                Username = user.Name,
+                Email = user.Email,
+                ImagesUrls = urls
+            };
+
+            return Ok(new Response<AddImageDTO>(response));
+        }
     }
 }
