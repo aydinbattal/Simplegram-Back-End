@@ -101,7 +101,7 @@ namespace API.Controllers
         }
 
         [HttpGet("byTag")]
-        public async Task<IActionResult> GetImageByTag([FromQuery] string tag, int pageNumber)
+        public IActionResult GetImageByTag([FromQuery] string tag, int pageNumber)
         {
 
             int pageSize = 10;
@@ -157,10 +157,10 @@ namespace API.Controllers
         }
 
         [HttpGet("populartags")]
-        public async Task<IActionResult> GetPopularTags()
+        public IActionResult GetPopularTags()
         {
 
-            var popularTags = _context.Tags.ToList().GroupBy(i => i.Text).OrderByDescending(grp => grp.Count()).Select(grp => new { Tag = grp.Key, Count = grp.Count() }).Take(5);
+            var popularTags = _context.Tags.ToList().GroupBy(i => i.Text).OrderByDescending(x => x.Count()).Select(x => new { Tag = x.Key, Count = x.Count() }).Take(5);
 
             return Ok(popularTags);
 
