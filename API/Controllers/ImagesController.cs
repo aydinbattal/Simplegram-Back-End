@@ -32,7 +32,7 @@ namespace API.Controllers
 
             var totalRecords = await _context.Images.CountAsync();
 
-            var images = _context.Images.Include(x => x.User).Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderBy(x => x.PostingDate);
+            var images = _context.Images.Include(x => x.User).Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderByDescending(x => x.PostingDate);
             var result = new List<ImageDTO>();
 
             foreach (var i in images)
@@ -94,7 +94,7 @@ namespace API.Controllers
                 pageNumber = 1;
 
 
-            var images = _context.Images.Include(x => x.User).Include(x => x.Tags).OrderBy(x => x.PostingDate);
+            var images = _context.Images.Include(x => x.User).Include(x => x.Tags).OrderByDescending(x => x.PostingDate);
 
             var result = new List<ImageDTO>();
 
