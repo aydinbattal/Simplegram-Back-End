@@ -127,5 +127,16 @@ namespace API.Controllers
 
 
         }
+
+        [HttpGet("populartags")]
+        public async Task<IActionResult> GetPopularTags()
+        {
+
+            var popularTags = _context.Tags.ToList().GroupBy(i => i.Text).OrderByDescending(grp => grp.Count()).Select(grp => new { Tag = grp.Key, Count = grp.Count() }).Take(5);
+
+            return Ok(popularTags);
+
+
+        }
     }
 }
